@@ -1,5 +1,6 @@
 package nextstep.subway.station;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -24,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // given
-        ExtractableResponse<Response> response = createStation(createStationParams("강남역"));
+        ExtractableResponse<Response> response = 지하철역_등록되어_있음("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -50,8 +51,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ExtractableResponse<Response> createResponse1 = createStation(createStationParams("강남역"));
-        ExtractableResponse<Response> createResponse2 = createStation(createStationParams("역삼역"));
+        ExtractableResponse<Response> createResponse1 = 지하철역_등록되어_있음("강남역");
+        ExtractableResponse<Response> createResponse2 = 지하철역_등록되어_있음("역삼역");
 
         // when
         ExtractableResponse<Response> response = findAllStations();
@@ -71,7 +72,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = createStation(createStationParams("강남역"));
+        ExtractableResponse<Response> createResponse = 지하철역_등록되어_있음("강남역");
 
         // when
         String uri = createResponse.header("Location");
@@ -126,5 +127,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .get("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철역_등록되어_있음(String station) {
+        return createStation(createStationParams(station));
     }
 }

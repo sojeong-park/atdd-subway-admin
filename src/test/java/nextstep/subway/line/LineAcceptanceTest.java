@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import static nextstep.subway.station.StationAcceptanceTest.createStation;
-import static nextstep.subway.station.StationAcceptanceTest.createStationParams;
+
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -170,7 +170,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private Map<String, Object> createParamsLineSection(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private static Map<String, Object> createParamsLineSection(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -180,7 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private ExtractableResponse<Response> createLinesSection(Map<String, Object> params) {
+    private static ExtractableResponse<Response> createLinesSection(Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -207,9 +207,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void createStations() {
-        createStation(createStationParams("구로역")).as(StationResponse.class);
-        createStation(createStationParams("신도림역")).as(StationResponse.class);
-        createStation(createStationParams("영등포역")).as(StationResponse.class);
-        createStation(createStationParams("신길역")).as(StationResponse.class);
+        지하철역_등록되어_있음("구로역").as(StationResponse.class);
+        지하철역_등록되어_있음("신도림역").as(StationResponse.class);
+        지하철역_등록되어_있음("영등포역").as(StationResponse.class);
+        지하철역_등록되어_있음("신길역").as(StationResponse.class);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, Object> params) {
+        return createLinesSection(createParamsLineSection(
+                params.get("name").toString()
+                , params.get("color").toString()
+                , Long.valueOf(params.get("upStation").toString())
+                , Long.valueOf(params.get("downStation").toString())
+                , Integer.valueOf(params.get("distance").toString()))
+        );
     }
 }
