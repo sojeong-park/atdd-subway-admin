@@ -23,6 +23,9 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
+    @Embedded
+    private LineStations lineStations = new LineStations();
+
     protected Line() {
     }
 
