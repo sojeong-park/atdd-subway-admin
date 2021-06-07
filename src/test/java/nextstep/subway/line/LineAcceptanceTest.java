@@ -96,12 +96,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLinesSection(createParamsLineSection("1호선", "blue", 1L, 2L, 7));
 
         // when
-        // 지하철_노선_조회_요청
+        // 지하철_노선_조회_요청_응답
         ExtractableResponse<Response> response = findLineById(1L);
+        // then
+        // 지하철_노선_응답됨
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+        StationResponse upStation = lineResponse.getStations().get(0);
+        StationResponse downStation = lineResponse.getStations().get(lineResponse.getStations().size()-1);
 
         // then
         // 지하철_노선_응답됨
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(upStation.getName()).isEqualTo("구로역");
+        assertThat(downStation.getName()).isEqualTo("신도림역");
     }
 
     @DisplayName("지하철 노선을 수정한다.")
@@ -156,47 +163,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    @DisplayName("노선 조회 시 응답 상행역 부터 하행역 순으로 정렬 확인")
-    @Test
-    void getLineSectionSorting() {
-        // given
-        //지하철_역_생성_요청
-        createStations();
-
-        // 지하철_노선_등록되어_있음
-        createLinesSection(createParamsLineSection("1호선", "blue", 1L, 2L, 7));
-
-        // when
-        // 지하철_노선_조회_요청
-        ExtractableResponse<Response> response = findLineById(1L);
-
-        // then
-        // 지하철_노선_응답됨
-        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
-        StationResponse upStation = lineResponse.getStations().get(0);
-        StationResponse downStation = lineResponse.getStations().get(lineResponse.getStations().size()-1);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(upStation.getName()).isEqualTo("구로역");
-        assertThat(downStation.getName()).isEqualTo("신도림역");
-    }
-
     private Map<String, String> createParams(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
         return params;
-    }
-
-    private ExtractableResponse<Response> createLines(Map<String, String> params) {
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then().log().all()
-                .extract();
-        return createResponse;
     }
 
     private Map<String, Object> createParamsLineSection(String name, String color, Long upStationId, Long downStationId, int distance) {

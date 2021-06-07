@@ -33,7 +33,7 @@ public class StationController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StationResponse> showLine(@PathVariable Long id) {
+    public ResponseEntity<StationResponse> showStation(@PathVariable Long id) {
         return ResponseEntity.ok().body(StationResponse.of(stationService.findStation(id)));
     }
 
