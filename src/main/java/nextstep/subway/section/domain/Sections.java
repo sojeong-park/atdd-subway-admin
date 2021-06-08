@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -20,5 +21,17 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    // 주어진 upstation과 downstation의 값을 받아와 해당 값과 일치하는 역들이 있는지 확인한다.
+    // 두 값과 완전히 동일한 SECTION이 있다면 등록불가하다.
+    // 두 값과 하나라도 일치하지 않는다면 등록불가하다.
+    public boolean hasSection(Section section) {
+        //upStation끼리 일치하는 Sections 구하기
+        sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getUpStation()));
+        sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getDownStation()));
+        return false;
     }
 }

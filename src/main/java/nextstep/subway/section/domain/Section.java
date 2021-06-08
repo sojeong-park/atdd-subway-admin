@@ -43,6 +43,9 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
     public void update(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
