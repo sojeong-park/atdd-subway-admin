@@ -16,6 +16,9 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section) {
+        if (hasSection(section)) {
+            throw new RuntimeException("연관된 억이 없어 추가할수 없습니다.");
+        }
         sections.add(section);
     }
 
@@ -27,11 +30,10 @@ public class Sections {
     // 두 값과 완전히 동일한 SECTION이 있다면 등록불가하다.
     // 두 값과 하나라도 일치하지 않는다면 등록불가하다.
     public boolean hasSection(Section section) {
-        //upStation끼리 일치하는 Sections 구하기
-        sections.stream()
-                .filter(it -> it.getUpStation().equals(section.getUpStation()));
-        sections.stream()
-                .filter(it -> it.getUpStation().equals(section.getDownStation()));
+        for (Section currentSection : sections) {
+            currentSection.validDuplication(section);
+            //일치하는 항목이 하나라도 있으면  멈춘다. 그자리에 추가한다.
+        }
         return false;
     }
 }

@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    private Object 신분당선;
+    private LineResponse 신분당선;
     private StationResponse 강남역;
     private StationResponse 광교역;
     private Map<String, Object> createParams;

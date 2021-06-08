@@ -3,7 +3,6 @@ package nextstep.subway.section.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-
 import javax.persistence.*;
 
 @Entity
@@ -46,10 +45,17 @@ public class Section extends BaseEntity {
     public int getDistance() {
         return distance;
     }
+
     public void update(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void validDuplication(Section section) {
+       if (upStation.equals(section.upStation) || downStation.equals(section.downStation)) {
+           throw new RuntimeException("동일한 구간은 추가할수 없습니다.");
+       }
     }
 }
