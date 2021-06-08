@@ -13,9 +13,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static nextstep.subway.line.LineAcceptanceTest.라인_조회;
 import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +56,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         // 지하철_노선에_지하철역_등록됨
+        ExtractableResponse<Response> result = 라인_조회(1L);
+        LineResponse lineResponse = result.jsonPath().getObject(".", LineResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(lineResponse.getStations().get(3).getName()).isEqualTo(판교역.getName());
     }
 
     private static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long upStationId, Long downStationId, int distance) {

@@ -97,7 +97,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         // 지하철_노선_조회_요청_응답
-        ExtractableResponse<Response> response = findLineById(1L);
+        ExtractableResponse<Response> response = 라인_조회(1L);
         // then
         // 지하철_노선_응답됨
         LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
@@ -198,7 +198,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> findLineById(Long id) {
+    public static ExtractableResponse<Response> 라인_조회(Long id) {
         return RestAssured.given().log().all()
                 .when()
                 .get("/lines/{id}", id)

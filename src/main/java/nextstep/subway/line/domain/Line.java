@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
+import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -64,5 +65,9 @@ public class Line extends BaseEntity {
             stations.add(StationResponse.of(section.getDownStation()));
         }
         return stations;
+    }
+
+    public void addSections(Section section) {
+        sections.addSection(section);
     }
 }
