@@ -23,6 +23,13 @@ public class Sections {
 //        if (hasSection(section)) {
 //            throw new RuntimeException("연관된 억이 없어 추가할수 없습니다.");
 //        }
+//        Map<String, Object> indexInfo = findAddIndex(section);
+//        int splitIndex = (int) indexInfo.get("index"); // 자를 값
+//        List<Section> splitUp = splitList(0, splitIndex);
+//        List<Section> splitDown = splitList(splitIndex, sections.size());
+
+        //뒤에 추가하는게 더 쉽다..
+
         sections.add(section);
     }
 
@@ -35,36 +42,42 @@ public class Sections {
     // 두 값과 하나라도 일치하지 않는다면 등록불가하다.
     public Map<String, Object> findAddIndex(Section section) {
         Map<String, Object> result = new HashMap<>();
+        int index = 0;
+        boolean isUpStationChange = false;
+        boolean isDownStationChange = false;
+        Section inputSection = new Section();
         for (Section currentSection : sections) {
             currentSection.validDuplication(section);
-            //일치하는 항목이 하나라도 있으면  멈춘다. 그자리에 추가한다. 너무 많은 상황을 고려하지 말고 중간에 역이 들어가는것만 생각해본다.
-            //어디에 추가할지 인덱스 반환하기.
-            // 상행과 일치하면 하행의 station으로 업데이트하기
             if (currentSection.canAddSection(section.getUpStation())) {
-                //기존 구간 뒤에 넣기
-                int index1 = sections.indexOf(currentSection);
-                result.put("index", index1);
-                result.put("station", section.getDownStation());
-                result.put("stationPosition", "up");
-                System.out.println("상행선과 일치"+index1+","+currentSection.getUpStation().getName()+","+currentSection.getDownStation().getName());
+                index = sections.indexOf(currentSection);
+                isUpStationChange = currentSection.isSmallDistance(section.getDistance());;
                 break;
-//                List<Section> tmp = sections.subList(0, index);
-//                tmp.add(section);
-//                List<Section> tmp2 = sections.subList(index+1, sections.size());
-//                tmp2.get(0).updateDownStation(section.getUpStation());
-//                result =  Stream.concat(tmp.stream(), tmp2.stream())
-//                        .collect(Collectors.toList());
             }
-            //하행과 일치하면 상행의 station으로 업데이트하기 -> 이게 신규값
+
             if (currentSection.canAddSection(section.getDownStation())) {
-                //기존 구간 앞에 넣기
-                int index2 = sections.indexOf(currentSection);
-                result.put("index", index2);
-                result.put("station", section.getUpStation());
-                result.put("stationPosition", "down");
-                System.out.println("하행선과 일치"+index2+","+currentSection.getDownStation().getName());
+                index = sections.indexOf(currentSection);
+                isDownStationChange = currentSection.isSmallDistance(section.getDistance());
                 break;
             }
+
+            if (index == 0) {
+                if (section.getDownStation().equals(currentSection.getUpStation())) {
+                    //add(0, section.getUpStation()) 하고 끝낸다.
+                }
+            }
+            if(index == sections.size()-1) {
+                if (section.getUpStation().equals(currentSection.getUpStation())) {
+                    //add()하고 끝
+                }
+            }
+        }
+        if (isUpStationChange) {
+            sections.add(index+1, section);
+            sections.get(index+2).updateUpStation(section.getDownStation());
+        }
+        if (isDownStationChange) {
+            sections.add(index+1, section);
+            sections.get(index).updateDownStation(section.getUpStation());
         }
         return result;
     }

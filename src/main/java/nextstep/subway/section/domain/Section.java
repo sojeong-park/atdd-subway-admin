@@ -72,4 +72,8 @@ public class Section extends BaseEntity {
         }
         return false;
     }
+
+    public boolean isSmallDistance(int distance) {
+        return this.distance > distance;
+    }
 }
