@@ -53,9 +53,23 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
     public void validDuplication(Section section) {
-       if (upStation.equals(section.upStation) || downStation.equals(section.downStation)) {
+       if (upStation.equals(section.upStation) && downStation.equals(section.downStation)) {
            throw new RuntimeException("동일한 구간은 추가할수 없습니다.");
        }
+    }
+
+    public boolean canAddSection(Station station) {
+        if (station.equals(upStation) || station.equals(downStation)) {
+            return true;
+        }
+        return false;
     }
 }

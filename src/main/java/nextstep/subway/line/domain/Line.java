@@ -58,6 +58,10 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
     public List<StationResponse> getStations() {
         List<StationResponse> stations = new ArrayList<>();
         for (Section section: sections.getSections()) {

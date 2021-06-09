@@ -2,6 +2,7 @@ package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
@@ -25,5 +26,21 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Station))
+            return false;
+        Station station = (Station)o;
+        return id == station.id && Objects.equals(name, station.name);
+    }
+
+    // hashcode 재정의
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
