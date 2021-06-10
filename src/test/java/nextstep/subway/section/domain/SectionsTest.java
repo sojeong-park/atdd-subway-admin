@@ -62,29 +62,7 @@ class SectionsTest {
         Station 판교역 = createStation("판교역");
         Section 양재숲_판교역 = createSection(신분당선, 양재숲역, 판교역, 3);
 
-        Map<String, Object> result = 신분당선.getSections().findAddIndex(양재숲_판교역);
-        assertThat(result.get("index")).isEqualTo(1);
-        assertThat(result.get("station")).isEqualTo(판교역);
-        assertThat(result.get("stationPosition")).isEqualTo("up");
-        System.out.println(result);
-    }
-
-    @Test
-    @DisplayName("리스트 자르기")
-    void split_list() {
-        //given 기존 구간
-        신분당선_구간_생성();
-
-        List<Section> splitSection1 = 신분당선.getSections().splitList(0,1);
-        List<Section> splitSection2 = 신분당선.getSections().splitList(1,3);
-
-        assertThat(splitSection1).hasSize(1);
-        assertThat(splitSection2).hasSize(2);
-
-        assertThat(splitSection1.get(0).getUpStation().getName()).isEqualTo(강남역.getName());
-        assertThat(splitSection1.get(0).getDownStation().getName()).isEqualTo(양재역.getName());
-        assertThat(splitSection2.get(1).getUpStation().getName()).isEqualTo(양재숲역.getName());
-        assertThat(splitSection2.get(1).getDownStation().getName()).isEqualTo(광교역.getName());
+        신분당선.getSections().findAddIndex(양재숲_판교역);
     }
 
     @Test
@@ -112,9 +90,9 @@ class SectionsTest {
 
         //when
         Station 판교역 = createStation("판교역");
-        Section 판교숲_양재숲역 = createSection(신분당선, 판교역, 양재숲역, 100);
+        Section 판교_양재숲역 = createSection(신분당선, 판교역, 양재숲역, 10);
 
-        신분당선.getSections().findAddIndex(판교숲_양재숲역);
+        신분당선.getSections().findAddIndex(판교_양재숲역);
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
         for (Section newSection: 추가된_신분당선) {
             System.out.println(newSection.getUpStation().getName()+","+newSection.getDownStation().getName());
@@ -129,7 +107,7 @@ class SectionsTest {
 
         //when
         Station 교대역 = createStation("교대역");
-        Section 교대_강남역 = createSection(신분당선, 교대역, 강남역, 100);
+        Section 교대_강남역 = createSection(신분당선, 교대역, 강남역, 10);
 
         신분당선.getSections().findAddIndex(교대_강남역);
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
@@ -141,7 +119,28 @@ class SectionsTest {
     @Test
     @DisplayName("가장 뒤 노선에 구간 추가: 양재->양재숲->판교 노선에 판교->정자 추가")
     void 가장_뒤_노선에_구간_추가() {
+        //given
+        신분당선_구간_생성();
 
+        //when
+        Station 아무역 = createStation("아무역");
+        Section 광교_아무역 = createSection(신분당선, 광교역, 아무역, 10);
+
+        신분당선.getSections().findAddIndex(광교_아무역);
+        List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
+        for (Section newSection: 추가된_신분당선) {
+            System.out.println(newSection.getUpStation().getName()+","+newSection.getDownStation().getName());
+        }
+    }
+
+    @Test
+    @DisplayName("양재역을 가진 구간 반환 테스트")
+    void 될때까지() {
+        //given
+        신분당선_구간_생성();
+
+        List<Section> result = 신분당선.getSections().findHasStation(양재역);
+        assertThat(result.get(0).getDownStation()).isEqualTo(양재역);
     }
 
     public static Section createSection(Line line, Station upStation, Station downStation, int distance) {
@@ -159,14 +158,14 @@ class SectionsTest {
     public static void 신분당선_구간_생성() {
         강남역 = createStation("강남역");
         양재역 = createStation("양재역");
-        신분당선 = createLineSection("신분당선", "red", 강남역, 양재역, 50);
+        신분당선 = createLineSection("신분당선", "red", 강남역, 양재역, 150);
 
         양재숲역 = createStation("양재숲역");
-        양재_양재숲역 = createSection(신분당선, 양재역, 양재숲역, 3);
+        양재_양재숲역 = createSection(신분당선, 양재역, 양재숲역, 30);
         신분당선.addSections(양재_양재숲역);
 
         광교역 = createStation("광교역");
-        양재숲_광교역 = createSection(신분당선, 양재숲역, 광교역, 5);
+        양재숲_광교역 = createSection(신분당선, 양재숲역, 광교역, 50);
         신분당선.addSections(양재숲_광교역);
     }
 }
