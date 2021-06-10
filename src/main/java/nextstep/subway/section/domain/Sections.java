@@ -24,85 +24,40 @@ public class Sections {
         return sections;
     }
 
-    public void findAddIndex(Section section) {
-        Map<String, Object> result = new HashMap<>();
-        int index = 0;
-        Station newStation = new Station();
-        boolean isUpdate = false;
-        boolean updateComplete = false;
-        for (Section currentSection : sections) {
-            currentSection.validDuplication(section);
-            upStationEquals(currentSection, section);
-            downStationEquals(currentSection, section);
-//            if (currentSection.canAddSection(section.getUpStation())) {
-//                index = sections.indexOf(currentSection);
-//                isUpdate = currentSection.isSmallDistance(section.getDistance());
-//                newStation = section.getDownStation();
-//                if (isUpdate) {
-//                    if (index == 0) {
-//                        if (section.getDownStation().equals(sections.get(0).getUpStation())) {
-//                            sections.add(0, section);
-//                            updateComplete = true;
-//                        }
-//                    }
-//                    if (index == sections.size()-1) {
-//                        if (section.getUpStation().equals(sections.get(sections.size()-1).getDownStation())) {
-//                            sections.add(section);
-//                            updateComplete = true;
-//                        }
-//                    }
-//                    if (!updateComplete) {
-//                        //상항선 일치시 변경 노드
-//                        sections.add(index + 1, section);
-//                        sections.get(index + 2).updateUpStation(newStation);
-//                    }
-//                }
-//                break;
-//            }
-//
-//            if (currentSection.canAddSection(section.getDownStation())) {
-//                index = sections.indexOf(currentSection);
-//                isUpdate = currentSection.isSmallDistance(section.getDistance());
-//                newStation = section.getUpStation();
-//                if (isUpdate) {
-//                    if (index == 0) {
-//                        if (section.getDownStation().equals(sections.get(0).getUpStation())) {
-//                            sections.add(0, section);
-//                            updateComplete = true;
-//                        }
-//                    }
-//                    if (index == sections.size()-1) {
-//                        if (section.getUpStation().equals(sections.get(sections.size()-1).getDownStation())) {
-//                            sections.add(section);
-//                            updateComplete = true;
-//                        }
-//                    }
-//                    if (!updateComplete) {
-//                        //하행선 일치시 변경 노드
-//                        sections.add(index+1, section);
-//                        sections.get(index).updateDownStation(section.getUpStation());
-//                    }
-//                }
-//                break;
-//            }
+    public void inputSection(Section section) {
+        validDuplicationSection(section);
+        List<Section> upStationSection = findStation(section.getUpStation());
+        if (sections.size() > 1 && upStationSection.size() == 0) {
+            addDownStation(section);
+        }
+        if (sections.size() > 1 && upStationSection.size() >= 1) {
+            int index = sections.indexOf(upStationSection.get(0));
+            boolean isUpdate = canInputFirstOrLast(index, section);
+            inputMiddleUpStation(isUpdate, section, index);
+        }
+        if (sections.size() == 1) {
+            int upStationSize = findStation(section.getUpStation()).size();
+            int downStationSize = findStation(section.getDownStation()).size();
+            if (upStationSize == 1) {
+                canInputLast(section);
+            }
+            if (downStationSize == 1) {
+                canInputFirst(section);
+            }
+
         }
     }
 
-    public void upStationEquals(Section currentSection, Section section) {
-        if (currentSection.canAddSection(section.getUpStation())) {
-            int index = sections.indexOf(currentSection);
-            boolean isUpdate = canInputFirstOrLast(index, section);
-            canInputMiddleUpStation(isUpdate,section, index);
+    public void addDownStation(Section section) {
+        List<Section> hasDownStation = findStation(section.getDownStation());
+        if (hasDownStation.size()==0){
+            throw new RuntimeException("일치하는 역이 없어 구간을 추가할수 없습니다.");
         }
+        int index = sections.indexOf(hasDownStation.get(0));
+        boolean isUpdate = canInputFirstOrLast(index, section);
+        inputMiddleDownStation(isUpdate, section, index);
     }
 
-    public void downStationEquals(Section currentSection, Section section) {
-        if (currentSection.canAddSection(section.getDownStation())) {
-            int index = sections.indexOf(currentSection);
-            boolean isUpdate = canInputFirstOrLast(index, section);
-            canInputMiddleDownStation(isUpdate, section, index);
-        }
-    }
     public boolean canInputFirstOrLast(int index, Section section) {
         if (index == 0) {
            return canInputFirst(section);
@@ -110,6 +65,7 @@ public class Sections {
         if (index == sections.size()-1) {
             return canInputLast(section);
         }
+        sections.get(index).isSmallDistance(section.getDistance());
         return false;
     }
 
@@ -118,6 +74,7 @@ public class Sections {
             sections.add(0, section);
             return true;
         }
+        sections.get(0).isSmallDistance(section.getDistance());
         return false;
     }
 
@@ -126,42 +83,33 @@ public class Sections {
             sections.add(section);
             return true;
         }
+        sections.get(sections.size()-1).isSmallDistance(section.getDistance());
         return false;
     }
 
-    public void canInputMiddleUpStation(boolean isUpdate, Section section, int index) {
+    public void inputMiddleUpStation(boolean isUpdate, Section section, int index) {
         if (!isUpdate) {
             sections.add(index + 1, section);
             sections.get(index + 2).updateUpStation(section.getDownStation());
         }
     }
 
-    public void canInputMiddleDownStation(boolean isUpdate, Section section, int index) {
+    public void inputMiddleDownStation(boolean isUpdate, Section section, int index) {
         if (!isUpdate) {
             sections.add(index+1, section);
             sections.get(index).updateDownStation(section.getUpStation());
         }
     }
 
-    public void addSectionTest(Section section) {
-        List<Section> hasUpStation = findHasStation(section.getUpStation());
-        if (hasUpStation.size() != 0) {
-            int index = sections.indexOf(hasUpStation.get(0));
-            boolean isUpdate = canInputFirstOrLast(index, section);
-            canInputMiddleUpStation(isUpdate, section, index);
-        }
-        List<Section> hasDownStation = findHasStation(section.getDownStation());
-        if (hasDownStation.size()==0){
-            throw new RuntimeException("일치하는 역이 없어 구간을 추가할수 없습니다.");
-        }
-        int index = sections.indexOf(hasDownStation.get(0));
-        boolean isUpdate = canInputFirstOrLast(index, section);
-        canInputMiddleDownStation(isUpdate, section, index);
-    }
-
-    public List<Section> findHasStation(Station station) {
+    public List<Section> findStation(Station station) {
         return sections.stream()
                 .filter(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))
                 .collect(Collectors.toList());
+    }
+
+    public void validDuplicationSection(Section section) {
+        for (Section currentSection : sections) {
+            currentSection.validDuplication(section);
+        }
     }
 }

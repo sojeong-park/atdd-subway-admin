@@ -72,6 +72,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSections(Section section) {
-        sections.addSection(section);
+        sections.inputSection(section);
     }
 }

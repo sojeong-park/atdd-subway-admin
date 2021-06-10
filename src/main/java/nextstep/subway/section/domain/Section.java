@@ -60,6 +60,7 @@ public class Section extends BaseEntity {
     public void updateDownStation(Station downStation) {
         this.downStation = downStation;
     }
+
     public void validDuplication(Section section) {
        if (upStation.equals(section.upStation) && downStation.equals(section.downStation)) {
            throw new RuntimeException("동일한 구간은 추가할수 없습니다.");
@@ -73,7 +74,9 @@ public class Section extends BaseEntity {
         return false;
     }
 
-    public boolean isSmallDistance(int distance) {
-        return this.distance > distance;
+    public void isSmallDistance(int distance) {
+        if (this.distance < distance) {
+            throw new RuntimeException("기존 구간보다 긴 거리의 구간은 입력 할 수 없습니다.");
+        }
     }
 }
