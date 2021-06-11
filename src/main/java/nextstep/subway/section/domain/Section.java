@@ -7,6 +7,9 @@ import javax.persistence.*;
 
 @Entity
 public class Section extends BaseEntity {
+    private static final String LONG_DISTANCE_EXCEPTION = "기존 구간보다 긴 거리의 구간은 입력 할 수 없습니다.";
+    private static final String DUPLICATION_SECTION_EXCEPTION = "동일한 구간은 추가할수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -63,7 +66,7 @@ public class Section extends BaseEntity {
 
     public void validDuplication(Section section) {
        if (upStation.equals(section.upStation) && downStation.equals(section.downStation)) {
-           throw new RuntimeException("동일한 구간은 추가할수 없습니다.");
+           throw new RuntimeException(DUPLICATION_SECTION_EXCEPTION);
        }
     }
 
@@ -74,9 +77,9 @@ public class Section extends BaseEntity {
         return false;
     }
 
-    public void isSmallDistance(int distance) {
+    public void smallDistance(int distance) {
         if (this.distance < distance) {
-            throw new RuntimeException("기존 구간보다 긴 거리의 구간은 입력 할 수 없습니다.");
+            throw new RuntimeException(LONG_DISTANCE_EXCEPTION);
         }
     }
 }

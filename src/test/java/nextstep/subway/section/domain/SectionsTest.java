@@ -2,14 +2,9 @@ package nextstep.subway.section.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -28,7 +23,7 @@ class SectionsTest {
         신분당선_구간_한개_생성();
 
         Section 강남_양재역 = createSection(신분당선, new Station("강남역"), new Station("양재역"),10);
-        신분당선.addSections(강남_양재역);
+        신분당선.getSections().addOneSectionList(강남_양재역);
 
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
         assertThat(추가된_신분당선.get(0)).isEqualTo(강남_양재역);
@@ -40,7 +35,7 @@ class SectionsTest {
         신분당선_구간_한개_생성();
 
         Section 양재숲_판교역 = createSection(신분당선, new Station("양재숲역"), new Station("판교역"),10);
-        신분당선.addSections(양재숲_판교역);
+        신분당선.getSections().addOneSectionList(양재숲_판교역);
 
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
         assertThat(추가된_신분당선.get(1)).isEqualTo(양재숲_판교역);
@@ -67,7 +62,7 @@ class SectionsTest {
         Section 판교_정자역 = createSection(신분당선, 판교역, 정자역, 5);
 
         assertThatThrownBy(() -> {
-            신분당선.addSections(판교_정자역);
+            신분당선.getSections().inputSection(판교_정자역);
         }).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("일치하는 역이 없어 구간을 추가할수 없습니다.");
     }
@@ -81,7 +76,7 @@ class SectionsTest {
         Section 양재숲_판교역 = createSection(신분당선, 양재숲역, 판교역, 3000);
 
         assertThatThrownBy(() -> {
-            신분당선.addSections(양재숲_판교역);
+            신분당선.getSections().inputSection(양재숲_판교역);
         }).isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("기존 구간보다 긴 거리의 구간은 입력 할 수 없습니다.");
     }
@@ -97,6 +92,9 @@ class SectionsTest {
         신분당선.getSections().inputSection(양재숲_판교역);
 
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
+        for (Section section: 추가된_신분당선) {
+            System.out.println(section.getUpStation().getName()+","+section.getDownStation().getName());
+        }
         assertThat(추가된_신분당선.get(1)).isEqualTo(양재숲_판교역);
         assertThat(추가된_신분당선.get(2).getUpStation().getName()).isEqualTo(판교역.getName());
     }
@@ -110,10 +108,14 @@ class SectionsTest {
         //when
         Station 판교역 = createStation("판교역");
         Section 양재숲_판교역 = createSection(신분당선, 양재숲역, 판교역, 3);
-        신분당선.getSections().inputSection(양재숲_판교역);
+        List<Section> upStationSection = 신분당선.getSections().findStation(양재숲_판교역.getUpStation());
+        신분당선.getSections().addSectionListEqualUpStation(upStationSection, 양재숲_판교역);
 
         //then
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
+        for (Section section: 추가된_신분당선) {
+            System.out.println(section.getUpStation().getName()+","+section.getDownStation().getName());
+        }
         assertThat(추가된_신분당선.get(1)).isEqualTo(양재숲_판교역);
         assertThat(추가된_신분당선.get(2).getUpStation().getName()).isEqualTo(판교역.getName());
     }
@@ -127,10 +129,14 @@ class SectionsTest {
         //when
         Station 판교역 = createStation("판교역");
         Section 판교_양재숲역 = createSection(신분당선, 판교역, 양재숲역, 10);
-        신분당선.getSections().inputSection(판교_양재숲역);
+        List<Section> upStationSection = 신분당선.getSections().findStation(판교_양재숲역.getUpStation());
+        신분당선.getSections().addSectionListEqualDownStation(upStationSection, 판교_양재숲역);
 
         //given
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
+        for (Section section: 추가된_신분당선) {
+            System.out.println(section.getUpStation().getName()+","+section.getDownStation().getName());
+        }
         assertThat(추가된_신분당선.get(0).getDownStation().getName()).isEqualTo(판교역.getName());
         assertThat(추가된_신분당선.get(1)).isEqualTo(판교_양재숲역);
     }
@@ -148,6 +154,9 @@ class SectionsTest {
 
         //then
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
+        for (Section section: 추가된_신분당선) {
+            System.out.println(section.getUpStation().getName()+","+section.getDownStation().getName());
+        }
         assertThat(추가된_신분당선.get(0)).isEqualTo(강남_양재역);
     }
 
@@ -164,6 +173,9 @@ class SectionsTest {
 
         //then
         List<Section> 추가된_신분당선 = 신분당선.getSections().getSections();
+        for (Section section: 추가된_신분당선) {
+            System.out.println(section.getUpStation().getName()+","+section.getDownStation().getName());
+        }
         assertThat(추가된_신분당선).hasSize(4);
         assertThat(추가된_신분당선.get(추가된_신분당선.size()-1)).isEqualTo(광교_구일역);
     }

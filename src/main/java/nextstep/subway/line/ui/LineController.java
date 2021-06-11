@@ -50,11 +50,11 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity addSection(
+    public ResponseEntity<LineResponse> addSection(
             @PathVariable Long lineId,
             @RequestBody SectionRequest sectionRequest) {
         lineService.addSection(lineId, sectionRequest);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(lineService.findLine(lineId));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
